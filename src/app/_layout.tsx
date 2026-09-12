@@ -3,7 +3,7 @@ import { Stack } from "expo-router";
 import "../../global.css";
 
 export default function RootLayout() {
-  const [fontsLoaded] = useFonts({
+  const [fontsLoaded, fontError] = useFonts({
     "PlusJakartaSans-Regular": require("../../assets/fonts/PlusJakartaSans-Regular.ttf"),
     "PlusJakartaSans-Medium": require("../../assets/fonts/PlusJakartaSans-Medium.ttf"),
     "PlusJakartaSans-SemiBold": require("../../assets/fonts/PlusJakartaSans-SemiBold.ttf"),
@@ -11,7 +11,11 @@ export default function RootLayout() {
     "PlusJakartaSans-ExtraBold": require("../../assets/fonts/PlusJakartaSans-ExtraBold.ttf"),
   });
 
-  if (!fontsLoaded) {
+  if (fontError) {
+    console.error("Failed to load fonts:", fontError);
+  }
+
+  if (!fontsLoaded && !fontError) {
     return null;
   }
 
