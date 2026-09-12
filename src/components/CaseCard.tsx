@@ -1,5 +1,5 @@
 import Case from "@/interfaces/Case";
-import { Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 
 const CaseCard = ({
   title,
@@ -25,7 +25,7 @@ const CaseCard = ({
   const styles = difficultyStyles[difficulty!];
 
   return (
-    <View className="bg-card px-6 py-2 rounded-md">
+    <Pressable className="bg-card px-6 py-2 rounded-md border border-border transition-all ease-in duration-200 active:scale-[0.98]">
       <View className="flex-row items-center justify-between">
         <Text className="text-foreground font-jakarta-medium">
           #{caseNo?.toString().padStart(3, "0")} {title}
@@ -43,7 +43,7 @@ const CaseCard = ({
       <Text numberOfLines={4} className="text-base text-muted-foreground mt-2">
         {description}
       </Text>
-    </View>
+    </Pressable>
   );
 };
 
