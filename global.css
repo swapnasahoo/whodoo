@@ -22,4 +22,10 @@
   --color-success: #22c55e;
   --color-warning: #f59e0b;
   --color-destructive: #ef4444;
+
+  --font-jakarta: "PlusJakartaSans-Regular";
+  --font-jakarta-medium: "PlusJakartaSans-Medium";
+  --font-jakarta-semibold: "PlusJakartaSans-SemiBold";
+  --font-jakarta-bold: "PlusJakartaSans-Bold";
+  --font-jakarta-extrabold: "PlusJakartaSans-ExtraBold";
 }
