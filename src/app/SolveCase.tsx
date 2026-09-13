@@ -1,7 +1,15 @@
 import { mockCases } from "@/data/cases";
+import * as Haptics from "expo-haptics";
 import { router, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withSequence,
+  withTiming,
+} from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const SolveCase = () => {
@@ -12,6 +20,7 @@ const SolveCase = () => {
   const step = caseDetails?.steps[stepNo - 1];
   const isLastStep: boolean = caseDetails?.steps.length === stepNo;
   const [answerFound, setAnswerFound] = useState<boolean>(false);
+  const translateX = useSharedValue(0);
 
   if (!caseDetails) return;
 
@@ -34,6 +43,23 @@ const SolveCase = () => {
   };
 
   const styles = difficultyStyles[caseDetails.difficulty];
+
+  const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
+  const animatedStyles = useAnimatedStyle(() => ({
+    transform: [{ translateX: translateX.value }],
+  }));
+
+  const press = Gesture.Tap().onEnd(() => {
+    if (answerFound) return;
+
+    translateX.value = withSequence(
+      withTiming(10, { duration: 40 }),
+      withTiming(-10, { duration: 40 }),
+      withTiming(10, { duration: 40 }),
+      withTiming(-10, { duration: 40 }),
+      withTiming(0, { duration: 40 }),
+    );
+  });
 
   const renderStep = () => {
     if (stepNo === 0) {
@@ -79,27 +105,33 @@ const SolveCase = () => {
                 option === step.options[step.correctOption];
 
               return (
-                <Pressable
-                  key={index}
-                  onPress={() =>
-                    option === step.options[step.correctOption] &&
-                    setAnswerFound(true)
-                  }
-                  disabled={answerFound}
-                  className={`w-full h-20 mt-3 flex-row items-center gap-3 border border-b-6 ${answerFound && isCorrectOption ? "bg-success/15 border-success/20 border-b-success/15" : "bg-card border-b-border/40 border-border"} px-6 rounded-xl transition-all ease-out duration-200 active:scale-[0.98] active:translate-y-1 active:border-0 active:border-b-0`}
-                >
-                  <View
-                    className={`size-10 items-center justify-center rounded-full border ${answerFound && isCorrectOption ? "border-success/20" : "border-border"}`}
+                <GestureDetector gesture={press}>
+                  <AnimatedPressable
+                    key={index}
+                    onPress={() => {
+                      option === step.options[step.correctOption]
+                        ? setAnswerFound(true)
+                        : Haptics.notificationAsync(
+                            Haptics.NotificationFeedbackType.Error,
+                          );
+                    }}
+                    disabled={answerFound}
+                    style={animatedStyles}
+                    className={`w-full h-20 mt-3 flex-row items-center gap-3 border border-b-6 ${answerFound && isCorrectOption ? "bg-success/15 border-success/20 border-b-success/15" : "bg-card border-b-border/40 border-border"} px-6 rounded-xl transition-all ease-out duration-200 active:scale-[0.98] active:translate-y-1 active:border-0 active:border-b-0`}
                   >
-                    <Text className="text-foreground font-jakarta-semibold -translate-y-px">
-                      {String.fromCharCode(65 + index)}
-                    </Text>
-                  </View>
+                    <View
+                      className={`size-10 items-center justify-center rounded-full border ${answerFound && isCorrectOption ? "border-success/20" : "border-border"}`}
+                    >
+                      <Text className="text-foreground font-jakarta-semibold -translate-y-px">
+                        {String.fromCharCode(65 + index)}
+                      </Text>
+                    </View>
 
-                  <Text className="flex-1 text-foreground text-lg font-jakarta-semibold">
-                    {option}
-                  </Text>
-                </Pressable>
+                    <Text className="flex-1 text-foreground text-lg font-jakarta-semibold">
+                      {option}
+                    </Text>
+                  </AnimatedPressable>
+                </GestureDetector>
               );
             })}
           </View>
