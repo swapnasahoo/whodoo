@@ -33,7 +33,7 @@ const OptionButton = ({
   }));
 
   const press = Gesture.Tap().onEnd(() => {
-    if (answerFound) return;
+    if (answerFound || isCorrectOption) return;
 
     translateX.value = withSequence(
       withTiming(10, { duration: 40 }),
