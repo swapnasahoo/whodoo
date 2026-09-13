@@ -1,11 +1,16 @@
 import { mockCases } from "@/data/cases";
 import { useLocalSearchParams } from "expo-router";
+import { useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const SolveCase = () => {
   const { caseId } = useLocalSearchParams<{ caseId: string }>();
   const caseDetails = mockCases.find((c) => c.id === caseId);
+
+  const [stepNo, setStepNo] = useState<number>(0);
+  const step = caseDetails?.steps[stepNo];
+  const [answerFound, setAnswerFound] = useState<boolean>(false);
 
   if (!caseDetails) return;
 
@@ -28,6 +33,32 @@ const SolveCase = () => {
   };
 
   const styles = difficultyStyles[caseDetails.difficulty];
+
+  const renderStep = () => {
+    if (stepNo === 0) {
+      return (
+        <View className="gap-3">
+          <View>
+            <Text className="text-foreground text-lg font-jakarta-bold tracking-wide ml-2">
+              Case Briefing
+            </Text>
+
+            <View className="w-1 h-full absolute bg-primary rounded-full" />
+          </View>
+
+          <View className="bg-card w-full h-max rounded-md border border-border px-3 py-4 gap-3">
+            <View>
+              <Text className="text-muted-foreground text-[15px] font-jakarta-medium tracking-wide leading-5 ml-4">
+                {caseDetails.introduction}
+              </Text>
+
+              <View className="w-0.5 h-full absolute bg-primary rounded-full" />
+            </View>
+          </View>
+        </View>
+      );
+    }
+  };
 
   return (
     <View className="flex-1 bg-background px-6 py-4">
@@ -57,23 +88,50 @@ const SolveCase = () => {
 
         {/* CONTENT */}
         <ScrollView style={{ flex: 1, marginTop: 16 }}>
+          {renderStep()}
+
           <View className="gap-3">
             <View>
-              <Text className="text-foreground text-lg font-jakarta-bold tracking-wide ml-2">
-                Case Briefing
+              <Text className="text-foreground text-lg ml-2 font-jakarta-semibold">
+                {step?.title}
               </Text>
 
-              <View className="w-1 h-full absolute bg-primary rounded-full" />
+              <View className="w-1 h-full bg-primary absolute rounded-full" />
             </View>
 
-            <View className="bg-card w-full h-max rounded-md border border-border px-3 py-4 gap-3">
-              <View>
-                <Text className="text-muted-foreground text-[15px] font-jakarta-medium tracking-wide leading-5 ml-4">
-                  {caseDetails.introduction}
-                </Text>
+            <View>
+              <Text className="text-foreground text-2xl font-jakarta-bold">
+                {step?.question}
+              </Text>
 
-                <View className="w-0.5 h-full absolute bg-primary rounded-full" />
-              </View>
+              {step?.options.map((option, index) => {
+                const isCorrectOption =
+                  option === step.options[step.correctOption];
+
+                return (
+                  <Pressable
+                    key={index}
+                    onPress={() =>
+                      option === step.options[step.correctOption] &&
+                      setAnswerFound(true)
+                    }
+                    disabled={answerFound}
+                    className={`w-full h-20 mt-3 flex-row items-center gap-3 border border-b-6 ${answerFound && isCorrectOption ? "bg-success/15 border-success/20 border-b-success/15" : "bg-card border-b-border/40 border-border"} px-6 rounded-xl transition-all ease-out duration-200 active:scale-[0.98] active:translate-y-1 active:border-0 active:border-b-0`}
+                  >
+                    <View
+                      className={`size-10 items-center justify-center rounded-full border ${answerFound && isCorrectOption ? "border-success/20" : "border-border"}`}
+                    >
+                      <Text className="text-foreground font-jakarta-semibold -translate-y-px">
+                        {String.fromCharCode(65 + index)}
+                      </Text>
+                    </View>
+
+                    <Text className="text-foreground text-lg font-jakarta-semibold">
+                      {option}
+                    </Text>
+                  </Pressable>
+                );
+              })}
             </View>
           </View>
         </ScrollView>
