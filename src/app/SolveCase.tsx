@@ -9,7 +9,7 @@ const SolveCase = () => {
   const caseDetails = mockCases.find((c) => c.id === caseId);
 
   const [stepNo, setStepNo] = useState<number>(0);
-  const step = caseDetails?.steps[stepNo];
+  const step = caseDetails?.steps[stepNo - 1];
   const [answerFound, setAnswerFound] = useState<boolean>(false);
 
   if (!caseDetails) return;
