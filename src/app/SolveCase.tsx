@@ -218,6 +218,11 @@ const SolveCase = () => {
             {stepNo > 0 && (
               <Pressable
                 onPress={handleBack}
+                onPressIn={() =>
+                  Haptics.performAndroidHapticsAsync(
+                    Haptics.AndroidHaptics.Context_Click,
+                  )
+                }
                 className="w-15 h-16 items-center justify-center border-3 border-b-6 border-border rounded-xl transition-all duration-200 ease-out active:scale-[0.98] active:translate-y-1 active:border-b-3"
               >
                 <Ionicons
@@ -230,6 +235,11 @@ const SolveCase = () => {
 
             <Pressable
               onPress={handleContinue}
+              onPressIn={() =>
+                Haptics.performAndroidHapticsAsync(
+                  Haptics.AndroidHaptics.Context_Click,
+                )
+              }
               className={`flex-1 h-16 items-center justify-center mb-4 rounded-xl border-b-6 ${wrongOption === null ? "bg-violet-700 border-b-violet-950/40" : "bg-destructive border-b-red-950/40"} transition-all duration-200 ease-out active:scale-[0.98] active:border-b-transparent active:translate-y-1`}
             >
               <Text className="text-xl text-foreground font-jakarta-bold">

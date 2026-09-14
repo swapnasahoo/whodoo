@@ -1,3 +1,4 @@
+import * as Haptics from "expo-haptics";
 import { Modal, Pressable, Text } from "react-native";
 
 type HintModalProps = {
@@ -35,6 +36,11 @@ const HintModal = ({ hint, isVisible, onClose }: HintModalProps) => {
 
           <Pressable
             onPress={onClose}
+            onPressIn={() =>
+              Haptics.performAndroidHapticsAsync(
+                Haptics.AndroidHaptics.Context_Click,
+              )
+            }
             className="w-full h-16 mt-auto bg-violet-700 items-center justify-center border-b-6 border-b-violet-950/40 rounded-xl transition-all ease-out duration-200 active:scale-[0.98] active:border-b-0 active:translate-y-1"
           >
             <Text className="text-foreground text-xl font-jakarta-bold">
