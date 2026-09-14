@@ -47,7 +47,7 @@ const OptionButton = ({
         onPress={onPress}
         disabled={answerFound}
         style={animatedStyles}
-        className={`w-full h-20 mt-3 flex-row items-center gap-3 border border-b-6 ${
+        className={`w-full min-h-20 max-h-max py-2 mt-3 flex-row items-center gap-3 border border-b-6 ${
           answerFound && isCorrectOption
             ? "bg-success/15 border-success/20 border-b-success/15"
             : answerFound && isWrongOption
