@@ -1,9 +1,10 @@
 import { mockCases } from "@/data/cases";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import * as Haptics from "expo-haptics";
 import { router, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
-import { Pressable, ScrollView, Text, View } from "react-native";
+import { Modal, Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import CaseStepView from "./CaseStepView";
 
@@ -24,6 +25,7 @@ const SolveCase = () => {
       selectedOption: number | null;
     }[]
   >([]);
+  const [isHintModalVisible, setIsHintModalVisible] = useState<boolean>(false);
 
   if (!caseDetails) return;
 
@@ -153,14 +155,26 @@ const SolveCase = () => {
               #{caseDetails.caseNo.toString().padStart(3, "0")}
             </Text>
 
-            <View
-              className={`w-20 ${styles.background} border ${styles.border} py-0.5 rounded-full`}
-            >
-              <Text
-                className={`${styles.text} text-sm font-jakarta-semibold uppercase tracking-wide text-center`}
+            <View className="flex-row items-center gap-2">
+              <View
+                className={`w-20 ${styles.background} border ${styles.border} py-0.5 rounded-full`}
               >
-                {caseDetails.difficulty}
-              </Text>
+                <Text
+                  className={`${styles.text} text-sm font-jakarta-semibold uppercase tracking-wide text-center`}
+                >
+                  {caseDetails.difficulty}
+                </Text>
+              </View>
+
+              {step?.hint && (
+                <Pressable onPress={() => setIsHintModalVisible(true)}>
+                  <MaterialCommunityIcons
+                    name="lightbulb-on"
+                    size={18}
+                    className="text-amber-400"
+                  />
+                </Pressable>
+              )}
             </View>
           </View>
 
@@ -226,6 +240,43 @@ const SolveCase = () => {
           ""
         )}
       </SafeAreaView>
+
+      <Modal
+        visible={isHintModalVisible}
+        onRequestClose={() => setIsHintModalVisible(false)}
+        transparent
+        animationType="fade"
+      >
+        <Pressable
+          onPress={() => setIsHintModalVisible(false)}
+          className="flex-1 items-center justify-center"
+          style={{
+            backgroundColor: "rgba(0, 0, 0, 0.8)",
+          }}
+        >
+          <Pressable
+            onPress={(e) => e.stopPropagation()}
+            className="w-[80%] min-h-60 bg-background  px-6 pt-6 pb-4 flex-col gap-1 border border-b-6 border-border border-b-border/40 rounded-xl"
+          >
+            <Text className="text-muted-foreground text-sm font-jakarta-bold uppercase tracking-widest">
+              Hint time!
+            </Text>
+
+            <Text className="text-foreground text-lg font-jakarta-semibold">
+              {step?.hint}
+            </Text>
+
+            <Pressable
+              onPress={() => setIsHintModalVisible(false)}
+              className="w-full h-16 mt-auto bg-violet-700 items-center justify-center border-b-6 border-b-violet-950/40 rounded-xl transition-all ease-out duration-200 active:scale-[0.98] active:border-b-0 active:translate-y-1"
+            >
+              <Text className="text-foreground text-xl font-jakarta-bold">
+                GOT IT
+              </Text>
+            </Pressable>
+          </Pressable>
+        </Pressable>
+      </Modal>
     </View>
   );
 };
