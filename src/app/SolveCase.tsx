@@ -114,7 +114,7 @@ const SolveCase = () => {
                         {
                           stepNo,
                           correctOption: step?.correctOption,
-                          selectedOption,
+                          selectedOption: index,
                         },
                       ]);
                   }}
@@ -127,15 +127,11 @@ const SolveCase = () => {
     }
   };
 
-  function handleContinue(): void {
-    setStepNo(stepNo + 1);
-    const completedStep = completedSteps.find(
-      (step) => step.stepNo === stepNo + 1,
-    );
+  function restoreStep(stepNo: number) {
+    const completedStep = completedSteps.find((step) => step.stepNo === stepNo);
 
     if (completedStep) {
       setAnswerFound(true);
-
       setSelectedOption(completedStep.selectedOption);
 
       if (completedStep.selectedOption !== completedStep.correctOption) {
@@ -145,30 +141,30 @@ const SolveCase = () => {
       }
     } else {
       setAnswerFound(false);
+      setSelectedOption(null);
       setWrongOption(null);
-      isLastStep && router.replace("/");
     }
   }
 
-  function handleBack(): void {
-    if (!(stepNo > 1)) return;
-    const completedStep = completedSteps.find(
-      (step) => step.stepNo === stepNo - 1,
-    );
+  function handleContinue(): void {
+    const nextStepNo = stepNo + 1;
 
-    if (completedStep) {
-      setAnswerFound(true);
-
-      setSelectedOption(completedStep.selectedOption);
-
-      if (completedStep.selectedOption !== completedStep.correctOption) {
-        setWrongOption(completedStep.selectedOption);
-      } else {
-        setWrongOption(null);
-      }
+    if (isLastStep) {
+      router.replace("/");
+      return;
     }
 
-    stepNo > 0 && setStepNo(stepNo - 1);
+    setStepNo(nextStepNo);
+    restoreStep(nextStepNo);
+  }
+
+  function handleBack(): void {
+    if (stepNo > 1) {
+      const prevStepNo = stepNo - 1;
+
+      setStepNo(prevStepNo);
+      restoreStep(prevStepNo);
+    }
   }
 
   return (
