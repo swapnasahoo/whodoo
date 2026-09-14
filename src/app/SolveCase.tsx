@@ -143,6 +143,30 @@ const SolveCase = () => {
         {/* CONTENT */}
         <ScrollView style={{ flex: 1, marginTop: 16 }}>
           {renderStep()}
+
+          {answerFound && (
+            <View className="mt-4">
+              <View
+                className={`w-full min-h-32 h-max p-4 border border-b-6 ${wrongOption === null ? "bg-success/15 border-success/15 border-b-success/20" : "bg-destructive/15 border border-destructive/15 border-b-destructive/20"} rounded-xl`}
+              >
+                <Text
+                  className={`text-sm uppercase tracking-widest ${wrongOption === null ? "text-success" : "text-destructive"} font-jakarta-bold`}
+                >
+                  {wrongOption === null ? "Spot on!" : "Think more!"}
+                </Text>
+
+                <View className="gap-2 mt-2">
+                  <Text className="text-foreground text-lg font-jakarta-medium">
+                    {step?.response}
+                  </Text>
+                  <View className="w-full h-px rounded-full bg-success/15" />
+                  <Text className="text-muted-foreground text-base font-jakarta-medium">
+                    {step?.explanation}
+                  </Text>
+                </View>
+              </View>
+            </View>
+          )}
         </ScrollView>
 
         {answerFound || stepNo === 0 ? (
