@@ -16,6 +16,14 @@ const SolveCase = () => {
   const isLastStep: boolean = caseDetails?.steps.length === stepNo;
   const [answerFound, setAnswerFound] = useState<boolean>(false);
   const [wrongOption, setWrongOption] = useState<number | null>(null);
+  const [selectedOption, setSelectedOption] = useState<number | null>(null);
+  const [completedSteps, setCompletedSteps] = useState<
+    {
+      stepNo: number;
+      correctOption: number;
+      selectedOption: number | null;
+    }[]
+  >([]);
 
   if (!caseDetails) return;
 
@@ -91,6 +99,7 @@ const SolveCase = () => {
                   option={option}
                   onPress={() => {
                     setAnswerFound(true);
+                    setSelectedOption(index);
 
                     if (!isCorrectOption) {
                       setWrongOption(index);
@@ -98,6 +107,16 @@ const SolveCase = () => {
                         Haptics.NotificationFeedbackType.Error,
                       );
                     }
+
+                    step &&
+                      setCompletedSteps((prev) => [
+                        ...prev,
+                        {
+                          stepNo,
+                          correctOption: step?.correctOption,
+                          selectedOption,
+                        },
+                      ]);
                   }}
                 />
               );
@@ -110,12 +129,47 @@ const SolveCase = () => {
 
   function handleContinue(): void {
     setStepNo(stepNo + 1);
-    setAnswerFound(false);
-    setWrongOption(null);
-    isLastStep && router.replace("/");
+    const completedStep = completedSteps.find(
+      (step) => step.stepNo === stepNo + 1,
+    );
+
+    if (completedStep) {
+      setAnswerFound(true);
+
+      setSelectedOption(completedStep.selectedOption);
+
+      if (completedStep.selectedOption !== completedStep.correctOption) {
+        setWrongOption(completedStep.selectedOption);
+      } else {
+        setWrongOption(null);
+      }
+    } else {
+      setAnswerFound(false);
+      setWrongOption(null);
+      isLastStep && router.replace("/");
+    }
   }
 
-  function handleBack(): void {}
+  function handleBack(): void {
+    if (!(stepNo > 1)) return;
+    const completedStep = completedSteps.find(
+      (step) => step.stepNo === stepNo - 1,
+    );
+
+    if (completedStep) {
+      setAnswerFound(true);
+
+      setSelectedOption(completedStep.selectedOption);
+
+      if (completedStep.selectedOption !== completedStep.correctOption) {
+        setWrongOption(completedStep.selectedOption);
+      } else {
+        setWrongOption(null);
+      }
+    }
+
+    stepNo > 0 && setStepNo(stepNo - 1);
+  }
 
   return (
     <View className="flex-1 bg-background px-6 py-4">
