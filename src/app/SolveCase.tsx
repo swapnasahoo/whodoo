@@ -5,7 +5,7 @@ import { router, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import OptionButton from "../components/OptionButton";
+import CaseStepView from "./CaseStepView";
 
 const SolveCase = () => {
   const { caseId } = useLocalSearchParams<{ caseId: string }>();
@@ -72,60 +72,36 @@ const SolveCase = () => {
       );
     } else if (stepNo > 0) {
       return (
-        <View className="gap-3">
-          <View>
-            <Text className="text-foreground text-lg ml-2 font-jakarta-semibold">
-              {step?.title}
-            </Text>
-
-            <View className="w-1 h-full bg-primary absolute rounded-full" />
-          </View>
-
-          <View>
-            <Text className="text-foreground text-2xl font-jakarta-bold">
-              {step?.question}
-            </Text>
-
-            {step?.options.map((option, index) => {
-              const isCorrectOption =
-                option === step.options[step.correctOption];
-
-              return (
-                <OptionButton
-                  index={index}
-                  answerFound={answerFound}
-                  isCorrectOption={isCorrectOption}
-                  isWrongOption={wrongOption === index}
-                  option={option}
-                  onPress={() => {
-                    setAnswerFound(true);
-                    setSelectedOption(index);
-
-                    if (!isCorrectOption) {
-                      setWrongOption(index);
-                      Haptics.notificationAsync(
-                        Haptics.NotificationFeedbackType.Error,
-                      );
-                    }
-
-                    step &&
-                      setCompletedSteps((prev) => [
-                        ...prev,
-                        {
-                          stepNo,
-                          correctOption: step?.correctOption,
-                          selectedOption: index,
-                        },
-                      ]);
-                  }}
-                />
-              );
-            })}
-          </View>
-        </View>
+        <CaseStepView
+          step={step}
+          answerFound={answerFound}
+          wrongOption={wrongOption}
+          onOptionPress={handleOnOptionPress}
+        />
       );
     }
   };
+
+  function handleOnOptionPress(index: number) {
+    const isCorrectOption = step?.correctOption === index;
+    setAnswerFound(true);
+    setSelectedOption(index);
+
+    if (!isCorrectOption) {
+      setWrongOption(index);
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+    }
+
+    step &&
+      setCompletedSteps((prev) => [
+        ...prev,
+        {
+          stepNo: step.stepNo,
+          correctOption: step?.correctOption,
+          selectedOption: index,
+        },
+      ]);
+  }
 
   function restoreStep(stepNo: number) {
     const completedStep = completedSteps.find((step) => step.stepNo === stepNo);
