@@ -1,4 +1,5 @@
 import { mockCases } from "@/data/cases";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import * as Haptics from "expo-haptics";
 import { router, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
@@ -114,6 +115,8 @@ const SolveCase = () => {
     isLastStep && router.replace("/");
   }
 
+  function handleBack(): void {}
+
   return (
     <View className="flex-1 bg-background px-6 py-4">
       <SafeAreaView style={{ flex: 1 }}>
@@ -170,14 +173,29 @@ const SolveCase = () => {
         </ScrollView>
 
         {answerFound || stepNo === 0 ? (
-          <Pressable
-            onPress={handleContinue}
-            className={`w-full h-16 items-center justify-center mb-4 rounded-xl border-b-6 ${wrongOption === null ? "bg-violet-700 border-b-violet-950/40" : "bg-destructive border-b-red-950/40"} transition-all duration-200 ease-out active:scale-[0.98] active:border-b-transparent active:translate-y-1`}
-          >
-            <Text className="text-xl text-foreground font-jakarta-bold">
-              {isLastStep ? "FINISH" : "CONTINUE"}
-            </Text>
-          </Pressable>
+          <View className="flex-row items-baseline gap-2">
+            {stepNo > 0 && (
+              <Pressable
+                onPress={handleBack}
+                className="w-15 h-16 items-center justify-center border-3 border-b-6 border-border rounded-xl transition-all duration-200 ease-out active:scale-[0.98] active:translate-y-1 active:border-b-3"
+              >
+                <Ionicons
+                  name="chevron-back-sharp"
+                  size={20}
+                  className="text-muted-foreground"
+                />
+              </Pressable>
+            )}
+
+            <Pressable
+              onPress={handleContinue}
+              className={`flex-1 h-16 items-center justify-center mb-4 rounded-xl border-b-6 ${wrongOption === null ? "bg-violet-700 border-b-violet-950/40" : "bg-destructive border-b-red-950/40"} transition-all duration-200 ease-out active:scale-[0.98] active:border-b-transparent active:translate-y-1`}
+            >
+              <Text className="text-xl text-foreground font-jakarta-bold">
+                {isLastStep ? "FINISH" : "CONTINUE"}
+              </Text>
+            </Pressable>
+          </View>
         ) : (
           ""
         )}
