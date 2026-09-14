@@ -17,12 +17,14 @@ const OptionButton = ({
   answerFound,
   option,
   isCorrectOption,
+  isWrongOption,
   onPress,
 }: {
   index: number;
   answerFound: boolean;
   option: string;
   isCorrectOption: boolean;
+  isWrongOption: boolean;
   onPress: () => void;
 }) => {
   const translateX = useSharedValue(0);
@@ -50,10 +52,16 @@ const OptionButton = ({
         onPress={onPress}
         disabled={answerFound}
         style={animatedStyles}
-        className={`w-full h-20 mt-3 flex-row items-center gap-3 border border-b-6 ${answerFound && isCorrectOption ? "bg-success/15 border-success/20 border-b-success/15" : "bg-card border-b-border/40 border-border"} px-6 rounded-xl transition-all ease-out duration-200 active:scale-[0.98] active:translate-y-1 active:border-0 active:border-b-0`}
+        className={`w-full h-20 mt-3 flex-row items-center gap-3 border border-b-6 ${
+          answerFound && isCorrectOption
+            ? "bg-success/15 border-success/20 border-b-success/15"
+            : answerFound && isWrongOption
+              ? "bg-destructive/15 border-destructive/20 border-b-destructive/15"
+              : "bg-card border-b-border/40 border-border"
+        } px-6 rounded-xl transition-all ease-out duration-200 active:scale-[0.98] active:translate-y-1 active:border-0 active:border-b-0`}
       >
         <View
-          className={`size-10 items-center justify-center rounded-full border ${answerFound && isCorrectOption ? "border-success/20" : "border-border"}`}
+          className={`size-10 items-center justify-center rounded-full border ${answerFound && isCorrectOption ? "border-success/20" : isWrongOption ? "border-destructive/20" : "border-border"}`}
         >
           <Text className="text-foreground font-jakarta-semibold -translate-y-px">
             {String.fromCharCode(65 + index)}
@@ -76,6 +84,7 @@ const SolveCase = () => {
   const step = caseDetails?.steps[stepNo - 1];
   const isLastStep: boolean = caseDetails?.steps.length === stepNo;
   const [answerFound, setAnswerFound] = useState<boolean>(false);
+  const [wrongOption, setWrongOption] = useState<number | null>(null);
 
   if (!caseDetails) return;
 
@@ -147,14 +156,18 @@ const SolveCase = () => {
                   index={index}
                   answerFound={answerFound}
                   isCorrectOption={isCorrectOption}
+                  isWrongOption={wrongOption === index}
                   option={option}
-                  onPress={() =>
-                    isCorrectOption
-                      ? setAnswerFound(true)
-                      : Haptics.notificationAsync(
-                          Haptics.NotificationFeedbackType.Error,
-                        )
-                  }
+                  onPress={() => {
+                    setAnswerFound(true);
+
+                    if (!isCorrectOption) {
+                      setWrongOption(index);
+                      Haptics.notificationAsync(
+                        Haptics.NotificationFeedbackType.Error,
+                      );
+                    }
+                  }}
                 />
               );
             })}
@@ -167,6 +180,7 @@ const SolveCase = () => {
   function handleContinue(): void {
     setStepNo(stepNo + 1);
     setAnswerFound(false);
+    setWrongOption(null);
     isLastStep && router.replace("/");
   }
 
@@ -204,7 +218,7 @@ const SolveCase = () => {
         {answerFound || stepNo === 0 ? (
           <Pressable
             onPress={handleContinue}
-            className="bg-violet-700 w-full h-16 items-center justify-center mb-4 rounded-xl border-b-6 border-b-violet-950/40 transition-all duration-200 ease-out active:scale-[0.98] active:border-b-transparent active:translate-y-1"
+            className={`w-full h-16 items-center justify-center mb-4 rounded-xl border-b-6 ${wrongOption === null ? "bg-violet-700 border-b-violet-950/40" : "bg-destructive border-b-red-950/40"} transition-all duration-200 ease-out active:scale-[0.98] active:border-b-transparent active:translate-y-1`}
           >
             <Text className="text-xl text-foreground font-jakarta-bold">
               {isLastStep ? "FINISH" : "CONTINUE"}
