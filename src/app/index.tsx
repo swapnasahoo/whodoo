@@ -1,9 +1,36 @@
-import { Text, View } from "react-native";
+import { mockCases } from "@/data/cases";
+import { ScrollView, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import CaseCard from "../components/CaseCard";
 
 export default function Index() {
   return (
-    <View className="flex-1 items-center justify-center">
-      <Text>Edit src/app/index.tsx to edit this screen.</Text>
+    <View className="flex-1 bg-background px-6 py-4">
+      <SafeAreaView style={{ flex: 1 }}>
+        {/* HEADER */}
+        <View>
+          <Text className="text-foreground font-jakarta-extrabold text-4xl tracking-wide">
+            Whodoo
+          </Text>
+        </View>
+
+        {/* CONTENT */}
+        <ScrollView
+          style={{ flex: 1, marginTop: 24 }}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ gap: 12 }}
+        >
+          {mockCases.map((item) => (
+            <CaseCard
+              key={item.id}
+              caseNo={item.caseNo}
+              title={item.title}
+              description={item.description}
+              difficulty={item.difficulty}
+            />
+          ))}
+        </ScrollView>
+      </SafeAreaView>
     </View>
   );
 }
