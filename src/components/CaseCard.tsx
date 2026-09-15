@@ -1,12 +1,17 @@
 import Case from "@/interfaces/Case";
 import { Pressable, Text, View } from "react-native";
 
+type CaseCardProps = Pick<
+  Case,
+  "title" | "caseNo" | "description" | "difficulty"
+>;
+
 const CaseCard = ({
   title,
   caseNo,
   description,
   difficulty,
-}: Partial<Case>) => {
+}: CaseCardProps) => {
   const difficultyStyles = {
     Easy: {
       background: "bg-success/20",
