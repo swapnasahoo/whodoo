@@ -138,7 +138,7 @@ const SolveCase = () => {
   }
 
   function handleBack(): void {
-    if (stepNo > 1) {
+    if (stepNo > 0) {
       const prevStepNo = stepNo - 1;
 
       setStepNo(prevStepNo);
