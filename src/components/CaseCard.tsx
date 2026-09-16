@@ -1,17 +1,14 @@
 import Case from "@/interfaces/Case";
+import { router } from "expo-router";
 import { Pressable, Text, View } from "react-native";
 
-type CaseCardProps = Pick<
-  Case,
-  "title" | "caseNo" | "description" | "difficulty"
->;
-
 const CaseCard = ({
+  id,
   title,
   caseNo,
   description,
   difficulty,
-}: CaseCardProps) => {
+}: Partial<Case>) => {
   const difficultyStyles = {
     Easy: {
       background: "bg-success/20",
@@ -33,7 +30,12 @@ const CaseCard = ({
   const styles = difficultyStyles[difficulty!];
 
   return (
-    <Pressable className="bg-card px-6 py-2 h-32 rounded-md border border-border transition-all ease-in duration-200 active:scale-[0.98]">
+    <Pressable
+      onPress={() =>
+        router.push({ pathname: "/SolveCase", params: { caseId: id } })
+      }
+      className="bg-card px-6 py-2 h-32 rounded-md border border-border transition-all ease-in duration-200 active:scale-[0.98]"
+    >
       <View className="flex-row items-center justify-between">
         <Text className="text-foreground font-jakarta-medium">
           #{caseNo?.toString().padStart(3, "0")} {title}

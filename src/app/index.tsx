@@ -1,7 +1,8 @@
-import { mockCases } from "@/data/cases";
 import { ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import CaseCard from "../components/CaseCard";
+
+import CaseCard from "@/components/CaseCard";
+import { mockCases } from "@/data/cases";
 
 export default function Index() {
   return (
@@ -23,6 +24,7 @@ export default function Index() {
           {mockCases.map((item) => (
             <CaseCard
               key={item.id}
+              id={item.id}
               caseNo={item.caseNo}
               title={item.title}
               description={item.description}
