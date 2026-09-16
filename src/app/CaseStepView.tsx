@@ -35,6 +35,7 @@ const CaseStepView = ({
 
           return (
             <OptionButton
+              key={index}
               index={index}
               answerFound={answerFound}
               isCorrectOption={isCorrectOption}
