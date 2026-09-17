@@ -8,6 +8,7 @@ import { useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import CaseStepView from "./CaseStepView";
+import DifficultyBadge from "@/components/DifficultyBadge";
 
 const SolveCase = () => {
   const { caseId } = useLocalSearchParams<{ caseId: string }>();
@@ -29,26 +30,6 @@ const SolveCase = () => {
   const [isHintModalVisible, setIsHintModalVisible] = useState<boolean>(false);
 
   if (!caseDetails) return;
-
-  const difficultyStyles = {
-    Easy: {
-      background: "bg-success/20",
-      border: "border-success/40",
-      text: "text-success",
-    },
-    Medium: {
-      background: "bg-warning/20",
-      border: "border-warning/40",
-      text: "text-warning",
-    },
-    Hard: {
-      background: "bg-destructive/20",
-      border: "border-destructive/40",
-      text: "text-destructive",
-    },
-  };
-
-  const styles = difficultyStyles[caseDetails.difficulty];
 
   const renderStep = () => {
     if (stepNo === 0) {
@@ -157,15 +138,7 @@ const SolveCase = () => {
             </Text>
 
             <View className="flex-row items-center gap-2">
-              <View
-                className={`w-20 ${styles.background} border ${styles.border} py-0.5 rounded-full`}
-              >
-                <Text
-                  className={`${styles.text} text-sm font-jakarta-semibold uppercase tracking-wide text-center`}
-                >
-                  {caseDetails.difficulty}
-                </Text>
-              </View>
+              <DifficultyBadge difficulty={caseDetails.difficulty} />
 
               {step?.hint && (
                 <Pressable onPress={() => setIsHintModalVisible(true)}>
