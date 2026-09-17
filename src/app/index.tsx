@@ -3,23 +3,26 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import CaseCard from "@/components/CaseCard";
 import { mockCases } from "@/data/cases";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import useStorage from "@/hooks/useStorage";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useFocusEffect } from "expo-router";
 
 export default function Index() {
   const { getCompletedCases } = useStorage();
 
   const [completedCases, setCompletedCases] = useState<string[]>([]);
 
-  useEffect(() => {
+  const fetchCompletedCases = useCallback(() => {
     async function fetchCompletedCases() {
       const cases = await getCompletedCases();
       setCompletedCases(cases);
     }
 
     fetchCompletedCases();
-  }, []);
+  }, [getCompletedCases]);
+
+  useFocusEffect(() => fetchCompletedCases());
 
   return (
     <View className="flex-1 bg-background px-6 py-4">
