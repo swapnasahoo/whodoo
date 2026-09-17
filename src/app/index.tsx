@@ -1,11 +1,9 @@
 import { ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-
 import CaseCard from "@/components/CaseCard";
 import { mockCases } from "@/data/cases";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import useStorage from "@/hooks/useStorage";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "expo-router";
 
 export default function Index() {
