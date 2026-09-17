@@ -9,10 +9,13 @@ import { Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import CaseStepView from "./CaseStepView";
 import DifficultyBadge from "@/components/DifficultyBadge";
+import useStorage from "@/hooks/useStorage";
 
 const SolveCase = () => {
   const { caseId } = useLocalSearchParams<{ caseId: string }>();
   const caseDetails = mockCases.find((c) => c.id === caseId);
+
+  const { addCompletedCase } = useStorage();
 
   const [stepNo, setStepNo] = useState<number>(0);
   const step = caseDetails?.steps[stepNo - 1];
@@ -106,11 +109,12 @@ const SolveCase = () => {
     }
   }
 
-  function handleContinue(): void {
+  async function handleContinue(): Promise<void> {
     const nextStepNo = stepNo + 1;
 
     if (isLastStep) {
       router.replace("/");
+      await addCompletedCase({ caseId });
       return;
     }
 
