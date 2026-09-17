@@ -3,13 +3,18 @@ import { router } from "expo-router";
 import { Pressable, Text, View } from "react-native";
 import DifficultyBadge from "./DifficultyBadge";
 
+type CaseCardProps = Pick<
+  Case,
+  "id" | "title" | "caseNo" | "description" | "difficulty"
+>;
+
 const CaseCard = ({
   id,
   title,
   caseNo,
   description,
   difficulty,
-}: Partial<Case>) => {
+}: CaseCardProps) => {
   return (
     <Pressable
       onPress={() =>
