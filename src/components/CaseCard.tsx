@@ -1,12 +1,15 @@
 import Case from "@/interfaces/Case";
-import { router } from "expo-router";
+import { router, useIsPreview } from "expo-router";
 import { Pressable, Text, View } from "react-native";
 import DifficultyBadge from "./DifficultyBadge";
 
 type CaseCardProps = Pick<
   Case,
   "id" | "title" | "caseNo" | "description" | "difficulty"
->;
+> & {
+  isCompleted: boolean;
+  isPrevCompleted: boolean;
+};
 
 const CaseCard = ({
   id,
@@ -14,13 +17,16 @@ const CaseCard = ({
   caseNo,
   description,
   difficulty,
+  isCompleted,
+  isPrevCompleted,
 }: CaseCardProps) => {
   return (
     <Pressable
       onPress={() =>
         router.push({ pathname: "/SolveCase", params: { caseId: id } })
       }
-      className="bg-card px-6 py-2 h-32 rounded-md border border-border transition-all ease-in duration-200 active:scale-[0.98]"
+      className={`bg-card px-6 py-2 h-32 rounded-md border border-border transition-all ease-in duration-200 active:scale-[0.98] ${isCompleted && "opacity-50"} ${!isPrevCompleted && "opacity-60"}`}
+      disabled={isCompleted || !isPrevCompleted}
     >
       <View className="flex-row items-center justify-between">
         <Text className="text-foreground font-jakarta-medium">
