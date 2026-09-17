@@ -13,16 +13,16 @@ export default function Index() {
 
   const [completedCases, setCompletedCases] = useState<string[]>([]);
 
-  const fetchCompletedCases = useCallback(() => {
-    async function fetchCompletedCases() {
-      const cases = await getCompletedCases();
-      setCompletedCases(cases);
-    }
+  useFocusEffect(
+    useCallback(() => {
+      async function fetchCompletedCases() {
+        const cases = await getCompletedCases();
+        setCompletedCases(cases);
+      }
 
-    fetchCompletedCases();
-  }, [getCompletedCases]);
-
-  useFocusEffect(() => fetchCompletedCases());
+      fetchCompletedCases();
+    }, [getCompletedCases]),
+  );
 
   return (
     <View className="flex-1 bg-background px-6 py-4">
