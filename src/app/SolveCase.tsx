@@ -113,8 +113,8 @@ const SolveCase = () => {
     const nextStepNo = stepNo + 1;
 
     if (isLastStep) {
-      router.replace("/");
       await addCompletedCase({ caseId });
+      router.replace("/");
       return;
     }
 
