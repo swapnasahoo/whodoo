@@ -141,6 +141,8 @@ const SolveCase = () => {
     const nextStepNo = stepNo + 1;
 
     if (isLastStep) {
+      await addCompletedCase({ caseId });
+      router.replace("/");
       return;
     }
 
@@ -222,7 +224,7 @@ const SolveCase = () => {
           )}
         </ScrollView>
 
-        {answerFound || stepNo === 0 ? (
+        {answerFound || stepNo === 0 || isLastStep ? (
           <View className="flex-row items-baseline gap-2">
             {stepNo > 0 && (
               <Pressable
