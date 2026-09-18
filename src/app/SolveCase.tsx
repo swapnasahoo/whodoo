@@ -10,6 +10,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import CaseStepView from "./CaseStepView";
 import DifficultyBadge from "@/components/DifficultyBadge";
 import useStorage from "@/hooks/useStorage";
+import CaseResult from "./CaseResult";
 
 const SolveCase = () => {
   const { caseId } = useLocalSearchParams<{ caseId: string }>();
@@ -61,6 +62,18 @@ const SolveCase = () => {
             </View>
           </View>
         </View>
+      );
+    } else if (isLastStep) {
+      const endTime = Date.now();
+      const averageAttempts = totalAttempts / completedSteps.length;
+
+      return (
+        <CaseResult
+          startTime={startTime}
+          endTime={endTime}
+          hintsUsed={hintsUsed}
+          averageAttempts={averageAttempts}
+        />
       );
     } else if (stepNo > 0) {
       return (
@@ -129,7 +142,6 @@ const SolveCase = () => {
 
     if (isLastStep) {
       await addCompletedCase({ caseId });
-      router.replace("/");
       return;
     }
 
