@@ -103,6 +103,7 @@ const SolveCase = () => {
     if (nextAttempt === 1 && !isCorrectOption && step?.hint) {
       setIsHintModalVisible(true);
       setHintsUsed(hintsUsed + 1);
+      setWrongOption(null);
       return;
     }
 
