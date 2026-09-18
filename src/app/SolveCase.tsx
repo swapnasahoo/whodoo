@@ -33,6 +33,10 @@ const SolveCase = () => {
   const [attempt, setAttempt] = useState<number>(0);
   const [isHintModalVisible, setIsHintModalVisible] = useState<boolean>(false);
 
+  const startTime = new Date();
+  const [hintsUsed, setHintsUsed] = useState<number>(0);
+  const [totalAttempts, setTotalAttempts] = useState<number>(0);
+
   if (!caseDetails) return;
 
   const renderStep = () => {
@@ -82,8 +86,10 @@ const SolveCase = () => {
     // handling hint and answer
     const nextAttempt = attempt + 1;
     setAttempt(nextAttempt);
+    setTotalAttempts(totalAttempts + 1);
     if (nextAttempt === 1 && !isCorrectOption && step?.hint) {
       setIsHintModalVisible(true);
+      setHintsUsed(hintsUsed + 1);
       return;
     }
 
@@ -158,7 +164,7 @@ const SolveCase = () => {
                 <Pressable
                   onPress={() => {
                     setIsHintModalVisible(true);
-                    setAttempt(attempt + 1);
+                    setHintsUsed(hintsUsed + 1);
                   }}
                 >
                   <MaterialCommunityIcons
