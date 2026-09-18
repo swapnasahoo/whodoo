@@ -20,7 +20,7 @@ const SolveCase = () => {
 
   const [stepNo, setStepNo] = useState<number>(0);
   const step = caseDetails?.steps[stepNo - 1];
-  const isLastStep: boolean = caseDetails?.steps.length === stepNo;
+  const isLastStep: boolean = (caseDetails?.steps.length ?? 0) + 1 === stepNo;
   const [answerFound, setAnswerFound] = useState<boolean>(false);
   const [wrongOption, setWrongOption] = useState<number | null>(null);
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
@@ -141,7 +141,6 @@ const SolveCase = () => {
     const nextStepNo = stepNo + 1;
 
     if (isLastStep) {
-      await addCompletedCase({ caseId });
       return;
     }
 
