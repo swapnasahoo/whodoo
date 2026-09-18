@@ -4,7 +4,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import * as Haptics from "expo-haptics";
 import { router, useLocalSearchParams } from "expo-router";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import CaseStepView from "./CaseStepView";
@@ -34,7 +34,7 @@ const SolveCase = () => {
   const [attempt, setAttempt] = useState<number>(0);
   const [isHintModalVisible, setIsHintModalVisible] = useState<boolean>(false);
 
-  const startTime = Date.now();
+  const startTime = useRef(Date.now());
   const [hintsUsed, setHintsUsed] = useState<number>(0);
   const [totalAttempts, setTotalAttempts] = useState<number>(0);
 
@@ -69,7 +69,7 @@ const SolveCase = () => {
 
       return (
         <CaseResult
-          startTime={startTime}
+          startTime={startTime.current}
           endTime={endTime}
           hintsUsed={hintsUsed}
           averageAttempts={averageAttempts}
