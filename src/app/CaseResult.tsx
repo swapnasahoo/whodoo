@@ -52,7 +52,7 @@ const CaseResult = ({
     { label: "Hints", value: String(hintsUsed), icon: "bulb-outline" as const },
     {
       label: "Attempts",
-      value: String(averageAttempts),
+      value: String(averageAttempts.toFixed(2)),
       icon: "refresh-outline" as const,
     },
     {
