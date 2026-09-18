@@ -30,6 +30,7 @@ const SolveCase = () => {
       selectedOption: number | null;
     }[]
   >([]);
+  const [attempt, setAttempt] = useState<number>(0);
   const [isHintModalVisible, setIsHintModalVisible] = useState<boolean>(false);
 
   if (!caseDetails) return;
@@ -71,7 +72,6 @@ const SolveCase = () => {
 
   function handleOnOptionPress(index: number) {
     const isCorrectOption = step?.correctOption === index;
-    setAnswerFound(true);
     setSelectedOption(index);
 
     if (!isCorrectOption) {
@@ -79,6 +79,15 @@ const SolveCase = () => {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
     }
 
+    // handling hint and answer
+    const nextAttempt = attempt + 1;
+    setAttempt(nextAttempt);
+    if (nextAttempt === 1 && !isCorrectOption && step?.hint) {
+      setIsHintModalVisible(true);
+      return;
+    }
+
+    setAnswerFound(true);
     step &&
       setCompletedSteps((prev) => [
         ...prev,
@@ -119,6 +128,7 @@ const SolveCase = () => {
     }
 
     setStepNo(nextStepNo);
+    setAttempt(0);
     restoreStep(nextStepNo);
   }
 
@@ -145,7 +155,12 @@ const SolveCase = () => {
               <DifficultyBadge difficulty={caseDetails.difficulty} />
 
               {step?.hint && (
-                <Pressable onPress={() => setIsHintModalVisible(true)}>
+                <Pressable
+                  onPress={() => {
+                    setIsHintModalVisible(true);
+                    setAttempt(attempt + 1);
+                  }}
+                >
                   <MaterialCommunityIcons
                     name="lightbulb-on"
                     size={18}
