@@ -1,3 +1,4 @@
+import formatTime from "@/utils/formatTime";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Text, View } from "react-native";
 
@@ -42,7 +43,7 @@ const CaseResult = ({
   averageAttempts,
 }: CaseResultProps) => {
   const duration = endTime - startTime;
-  const formattedDuration = (duration / 1000).toFixed(2) + "s";
+  const formattedDuration = formatTime(duration);
 
   const timeLabel =
     duration / 1000 < 120 ? "Flash" : duration / 1000 < 300 ? "Quick" : "Brisk";
