@@ -4,12 +4,13 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import * as Haptics from "expo-haptics";
 import { router, useLocalSearchParams } from "expo-router";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import CaseStepView from "./CaseStepView";
 import DifficultyBadge from "@/components/DifficultyBadge";
 import useStorage from "@/hooks/useStorage";
+import CaseResult from "./CaseResult";
 
 const SolveCase = () => {
   const { caseId } = useLocalSearchParams<{ caseId: string }>();
@@ -19,7 +20,7 @@ const SolveCase = () => {
 
   const [stepNo, setStepNo] = useState<number>(0);
   const step = caseDetails?.steps[stepNo - 1];
-  const isLastStep: boolean = caseDetails?.steps.length === stepNo;
+  const isLastStep: boolean = (caseDetails?.steps.length ?? 0) + 1 === stepNo;
   const [answerFound, setAnswerFound] = useState<boolean>(false);
   const [wrongOption, setWrongOption] = useState<number | null>(null);
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
@@ -30,7 +31,12 @@ const SolveCase = () => {
       selectedOption: number | null;
     }[]
   >([]);
+  const [attempt, setAttempt] = useState<number>(0);
   const [isHintModalVisible, setIsHintModalVisible] = useState<boolean>(false);
+
+  const startTime = useRef(Date.now());
+  const [hintsUsed, setHintsUsed] = useState<number>(0);
+  const [totalAttempts, setTotalAttempts] = useState<number>(0);
 
   if (!caseDetails) return;
 
@@ -57,6 +63,18 @@ const SolveCase = () => {
           </View>
         </View>
       );
+    } else if (isLastStep) {
+      const endTime = Date.now();
+      const averageAttempts = totalAttempts / completedSteps.length;
+
+      return (
+        <CaseResult
+          startTime={startTime.current}
+          endTime={endTime}
+          hintsUsed={hintsUsed}
+          averageAttempts={averageAttempts}
+        />
+      );
     } else if (stepNo > 0) {
       return (
         <CaseStepView
@@ -71,7 +89,6 @@ const SolveCase = () => {
 
   function handleOnOptionPress(index: number) {
     const isCorrectOption = step?.correctOption === index;
-    setAnswerFound(true);
     setSelectedOption(index);
 
     if (!isCorrectOption) {
@@ -79,6 +96,18 @@ const SolveCase = () => {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
     }
 
+    // handling hint and answer
+    const nextAttempt = attempt + 1;
+    setAttempt(nextAttempt);
+    setTotalAttempts(totalAttempts + 1);
+    if (nextAttempt === 1 && !isCorrectOption && step?.hint) {
+      setIsHintModalVisible(true);
+      setHintsUsed(hintsUsed + 1);
+      setWrongOption(null);
+      return;
+    }
+
+    setAnswerFound(true);
     step &&
       setCompletedSteps((prev) => [
         ...prev,
@@ -119,6 +148,7 @@ const SolveCase = () => {
     }
 
     setStepNo(nextStepNo);
+    setAttempt(0);
     restoreStep(nextStepNo);
   }
 
@@ -145,7 +175,12 @@ const SolveCase = () => {
               <DifficultyBadge difficulty={caseDetails.difficulty} />
 
               {step?.hint && (
-                <Pressable onPress={() => setIsHintModalVisible(true)}>
+                <Pressable
+                  onPress={() => {
+                    setIsHintModalVisible(true);
+                    setHintsUsed(hintsUsed + 1);
+                  }}
+                >
                   <MaterialCommunityIcons
                     name="lightbulb-on"
                     size={18}
@@ -190,7 +225,7 @@ const SolveCase = () => {
           )}
         </ScrollView>
 
-        {answerFound || stepNo === 0 ? (
+        {answerFound || stepNo === 0 || isLastStep ? (
           <View className="flex-row items-baseline gap-2">
             {stepNo > 0 && (
               <Pressable
