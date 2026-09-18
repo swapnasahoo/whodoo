@@ -33,7 +33,7 @@ const SolveCase = () => {
   const [attempt, setAttempt] = useState<number>(0);
   const [isHintModalVisible, setIsHintModalVisible] = useState<boolean>(false);
 
-  const startTime = new Date();
+  const startTime = Date.now();
   const [hintsUsed, setHintsUsed] = useState<number>(0);
   const [totalAttempts, setTotalAttempts] = useState<number>(0);
 
