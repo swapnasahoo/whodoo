@@ -78,7 +78,6 @@ const SolveCase = () => {
         </View>
       );
     } else if (isLastStep) {
-      setEndTime(Date.now());
       const averageAttempts = totalAttempts / completedSteps.length;
 
       return (
@@ -191,6 +190,12 @@ const SolveCase = () => {
     }
     fetchCompletedCase();
   }, []);
+
+  useEffect(() => {
+    if (isLastStep) {
+      setEndTime(Date.now());
+    }
+  }, [isLastStep]);
 
   return (
     <View className="flex-1 bg-background px-6 py-4">
