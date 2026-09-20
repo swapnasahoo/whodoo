@@ -22,10 +22,12 @@ export default function Index() {
 
   const filteredCases = useMemo(() => {
     if (selectedFilter === "completed")
-      return mockCases.filter((c) => completedCases.some((c) => c.id === c.id));
+      return mockCases.filter((item) =>
+        completedCases.some((c) => c.id === item.id),
+      );
     if (selectedFilter === "pending")
       return mockCases.filter(
-        (c) => !completedCases.some((c) => c.id === c.id),
+        (item) => !completedCases.some((c) => c.id === item.id),
       );
     return mockCases;
   }, [selectedFilter, completedCases]);
