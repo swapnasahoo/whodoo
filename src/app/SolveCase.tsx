@@ -35,6 +35,7 @@ const SolveCase = () => {
   const [isHintModalVisible, setIsHintModalVisible] = useState<boolean>(false);
 
   const startTime = useRef(Date.now());
+  const [endTime, setEndTime] = useState<number>(0);
   const [hintsUsed, setHintsUsed] = useState<number>(0);
   const [totalAttempts, setTotalAttempts] = useState<number>(0);
 
@@ -64,7 +65,7 @@ const SolveCase = () => {
         </View>
       );
     } else if (isLastStep) {
-      const endTime = Date.now();
+      setEndTime(Date.now());
       const averageAttempts = totalAttempts / completedSteps.length;
 
       return (
@@ -142,7 +143,12 @@ const SolveCase = () => {
     const nextStepNo = stepNo + 1;
 
     if (isLastStep) {
-      await addCompletedCase({ caseId });
+      await addCompletedCase({
+        id: caseId,
+        timeTaken: endTime - startTime.current,
+        hintsUsed: hintsUsed,
+        averageAttempts: totalAttempts / completedSteps.length,
+      });
       router.replace("/");
       return;
     }
