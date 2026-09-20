@@ -20,7 +20,8 @@ const SolveCase = () => {
     null,
   );
 
-  const { addCompletedCase, getCompletedCases } = useStorage();
+  const { addCompletedCase, getCompletedCases, deleteCompletedCase } =
+    useStorage();
 
   const [stepNo, setStepNo] = useState<number>(0);
   const step = caseDetails?.steps[stepNo - 1];
@@ -154,7 +155,11 @@ const SolveCase = () => {
   async function handleContinue(): Promise<void> {
     const nextStepNo = stepNo + 1;
 
-    if (completedCase) router.replace("/");
+    if (completedCase) {
+      await deleteCompletedCase(caseId);
+      router.replace({ pathname: "/SolveCase", params: { caseId } });
+    }
+
     if (isLastStep) {
       await addCompletedCase({
         id: caseId,
@@ -291,7 +296,11 @@ const SolveCase = () => {
               className={`flex-1 h-16 items-center justify-center mb-4 rounded-xl border-b-6 ${wrongOption === null ? "bg-violet-700 border-b-violet-950/40" : "bg-destructive border-b-red-950/40"} transition-all duration-200 ease-out active:scale-[0.98] active:border-b-transparent active:translate-y-1`}
             >
               <Text className="text-xl text-foreground font-jakarta-bold">
-                {isLastStep ? "FINISH" : "CONTINUE"}
+                {isLastStep
+                  ? "FINISH"
+                  : completedCase !== null
+                    ? "RESTART"
+                    : "CONTINUE"}
               </Text>
             </Pressable>
           </View>
