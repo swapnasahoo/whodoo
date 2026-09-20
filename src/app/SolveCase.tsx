@@ -4,19 +4,24 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import * as Haptics from "expo-haptics";
 import { router, useLocalSearchParams } from "expo-router";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import CaseStepView from "./CaseStepView";
 import DifficultyBadge from "@/components/DifficultyBadge";
 import useStorage from "@/hooks/useStorage";
 import CaseResult from "./CaseResult";
+import { CompletedCase } from "@/interfaces/Case";
 
 const SolveCase = () => {
   const { caseId } = useLocalSearchParams<{ caseId: string }>();
   const caseDetails = mockCases.find((c) => c.id === caseId);
+  const [completedCase, setCompletedCase] = useState<CompletedCase | null>(
+    null,
+  );
 
-  const { addCompletedCase } = useStorage();
+  const { addCompletedCase, getCompletedCases, deleteCompletedCase } =
+    useStorage();
 
   const [stepNo, setStepNo] = useState<number>(0);
   const step = caseDetails?.steps[stepNo - 1];
@@ -35,13 +40,23 @@ const SolveCase = () => {
   const [isHintModalVisible, setIsHintModalVisible] = useState<boolean>(false);
 
   const startTime = useRef(Date.now());
+  const [endTime, setEndTime] = useState<number>(0);
   const [hintsUsed, setHintsUsed] = useState<number>(0);
   const [totalAttempts, setTotalAttempts] = useState<number>(0);
 
   if (!caseDetails) return;
 
   const renderStep = () => {
-    if (stepNo === 0) {
+    if (completedCase) {
+      return (
+        <CaseResult
+          startTime={completedCase?.startTime}
+          endTime={completedCase?.endTime}
+          hintsUsed={completedCase?.hintsUsed}
+          averageAttempts={completedCase?.averageAttempts}
+        />
+      );
+    } else if (stepNo === 0) {
       return (
         <View className="gap-3">
           <View>
@@ -64,7 +79,6 @@ const SolveCase = () => {
         </View>
       );
     } else if (isLastStep) {
-      const endTime = Date.now();
       const averageAttempts = totalAttempts / completedSteps.length;
 
       return (
@@ -141,8 +155,23 @@ const SolveCase = () => {
   async function handleContinue(): Promise<void> {
     const nextStepNo = stepNo + 1;
 
+    if (completedCase) {
+      await deleteCompletedCase(caseId);
+      router.replace({ pathname: "/SolveCase", params: { caseId } });
+    }
+
+    if (nextStepNo === (caseDetails?.steps?.length ?? 0) + 1) {
+      setEndTime(Date.now());
+    }
+
     if (isLastStep) {
-      await addCompletedCase({ caseId });
+      await addCompletedCase({
+        id: caseId,
+        startTime: startTime.current,
+        endTime: endTime,
+        hintsUsed: hintsUsed,
+        averageAttempts: totalAttempts / completedSteps.length,
+      });
       router.replace("/");
       return;
     }
@@ -160,6 +189,16 @@ const SolveCase = () => {
       restoreStep(prevStepNo);
     }
   }
+
+  useEffect(() => {
+    async function fetchCompletedCase() {
+      const completedCases = await getCompletedCases();
+      const completedCaseData =
+        completedCases.find((c) => c.id === caseId) || null;
+      setCompletedCase(completedCaseData);
+    }
+    fetchCompletedCase();
+  }, []);
 
   return (
     <View className="flex-1 bg-background px-6 py-4">
@@ -255,7 +294,11 @@ const SolveCase = () => {
               className={`flex-1 h-16 items-center justify-center mb-4 rounded-xl border-b-6 ${wrongOption === null ? "bg-violet-700 border-b-violet-950/40" : "bg-destructive border-b-red-950/40"} transition-all duration-200 ease-out active:scale-[0.98] active:border-b-transparent active:translate-y-1`}
             >
               <Text className="text-xl text-foreground font-jakarta-bold">
-                {isLastStep ? "FINISH" : "CONTINUE"}
+                {isLastStep
+                  ? "FINISH"
+                  : completedCase !== null
+                    ? "RESTART"
+                    : "CONTINUE"}
               </Text>
             </Pressable>
           </View>

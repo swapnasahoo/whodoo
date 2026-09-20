@@ -14,6 +14,14 @@ export interface CaseStep {
   hint?: string;
 }
 
+export interface CompletedCase {
+  id: string;
+  startTime: number;
+  endTime: number;
+  hintsUsed: number;
+  averageAttempts: number;
+}
+
 export default interface Case {
   id: string;
   title: string;

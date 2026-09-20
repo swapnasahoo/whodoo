@@ -5,7 +5,7 @@ import { mockCases } from "@/data/cases";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import useStorage from "@/hooks/useStorage";
 import { useFocusEffect } from "expo-router";
-import Case from "@/interfaces/Case";
+import Case, { CompletedCase } from "@/interfaces/Case";
 
 type CaseFilter = "all" | "completed" | "pending";
 const CASE_FILTERS: { label: string; value: CaseFilter }[] = [
@@ -17,14 +17,18 @@ const CASE_FILTERS: { label: string; value: CaseFilter }[] = [
 export default function Index() {
   const { getCompletedCases } = useStorage();
 
-  const [completedCases, setCompletedCases] = useState<string[]>([]);
+  const [completedCases, setCompletedCases] = useState<CompletedCase[]>([]);
   const [selectedFilter, setSelectedFilter] = useState<CaseFilter>("all");
 
   const filteredCases = useMemo(() => {
     if (selectedFilter === "completed")
-      return mockCases.filter((c) => completedCases.includes(c.id));
+      return mockCases.filter((item) =>
+        completedCases.some((c) => c.id === item.id),
+      );
     if (selectedFilter === "pending")
-      return mockCases.filter((c) => !completedCases.includes(c.id));
+      return mockCases.filter(
+        (item) => !completedCases.some((c) => c.id === item.id),
+      );
     return mockCases;
   }, [selectedFilter, completedCases]);
 
@@ -80,10 +84,12 @@ export default function Index() {
               title={item.title}
               description={item.description}
               difficulty={item.difficulty}
-              isCompleted={completedCases.includes(item.id)}
+              isCompleted={completedCases.some((c) => c.id === item.id)}
               isPrevCompleted={
                 index === 0 ||
-                completedCases.includes(filteredCases[index - 1]?.id)
+                completedCases.some(
+                  (c) => c.id === filteredCases[index - 1]?.id,
+                )
               }
             />
           ))}
