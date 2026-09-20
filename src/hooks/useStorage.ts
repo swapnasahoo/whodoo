@@ -44,8 +44,20 @@ export default function useStorage() {
     }
   }
 
+  async function deleteCompletedCase(caseId: string) {
+    try {
+      const completedCases = await getCompletedCases();
+      const updatedCases =
+        JSON.stringify(completedCases.filter((c) => c.id !== caseId)) ?? "[]";
+      await AsyncStorage.setItem("completedCases", updatedCases);
+    } catch (error) {
+      console.error("Failed to delete the completed case", error);
+    }
+  }
+
   return {
     getCompletedCases,
     addCompletedCase,
+    deleteCompletedCase,
   };
 }
