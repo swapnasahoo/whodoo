@@ -145,7 +145,8 @@ const SolveCase = () => {
     if (isLastStep) {
       await addCompletedCase({
         id: caseId,
-        timeTaken: endTime - startTime.current,
+        startTime: startTime.current,
+        endTime: endTime,
         hintsUsed: hintsUsed,
         averageAttempts: totalAttempts / completedSteps.length,
       });

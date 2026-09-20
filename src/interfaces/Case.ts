@@ -16,7 +16,8 @@ export interface CaseStep {
 
 export interface CompletedCase {
   id: string;
-  timeTaken: number;
+  startTime: number;
+  endTime: number;
   hintsUsed: number;
   averageAttempts: number;
 }

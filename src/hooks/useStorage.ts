@@ -16,7 +16,8 @@ export default function useStorage() {
 
   async function addCompletedCase({
     id,
-    timeTaken,
+    startTime,
+    endTime,
     hintsUsed,
     averageAttempts,
   }: CompletedCase): Promise<void> {
@@ -31,7 +32,8 @@ export default function useStorage() {
         ...parsedCases,
         {
           id,
-          timeTaken,
+          startTime,
+          endTime,
           hintsUsed,
           averageAttempts,
         },
