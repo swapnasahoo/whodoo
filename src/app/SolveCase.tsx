@@ -4,19 +4,23 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import * as Haptics from "expo-haptics";
 import { router, useLocalSearchParams } from "expo-router";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import CaseStepView from "./CaseStepView";
 import DifficultyBadge from "@/components/DifficultyBadge";
 import useStorage from "@/hooks/useStorage";
 import CaseResult from "./CaseResult";
+import { CompletedCase } from "@/interfaces/Case";
 
 const SolveCase = () => {
   const { caseId } = useLocalSearchParams<{ caseId: string }>();
   const caseDetails = mockCases.find((c) => c.id === caseId);
+  const [completedCase, setCompletedCase] = useState<CompletedCase | null>(
+    null,
+  );
 
-  const { addCompletedCase } = useStorage();
+  const { addCompletedCase, getCompletedCases } = useStorage();
 
   const [stepNo, setStepNo] = useState<number>(0);
   const step = caseDetails?.steps[stepNo - 1];
@@ -42,7 +46,16 @@ const SolveCase = () => {
   if (!caseDetails) return;
 
   const renderStep = () => {
-    if (stepNo === 0) {
+    if (completedCase) {
+      return (
+        <CaseResult
+          startTime={completedCase?.startTime}
+          endTime={completedCase?.endTime}
+          hintsUsed={completedCase?.hintsUsed}
+          averageAttempts={completedCase?.averageAttempts}
+        />
+      );
+    } else if (stepNo === 0) {
       return (
         <View className="gap-3">
           <View>
@@ -142,6 +155,7 @@ const SolveCase = () => {
   async function handleContinue(): Promise<void> {
     const nextStepNo = stepNo + 1;
 
+    if (completedCase) router.replace("/");
     if (isLastStep) {
       await addCompletedCase({
         id: caseId,
@@ -167,6 +181,16 @@ const SolveCase = () => {
       restoreStep(prevStepNo);
     }
   }
+
+  useEffect(() => {
+    async function fetchCompletedCase() {
+      const completedCases = await getCompletedCases();
+      const completedCaseData =
+        completedCases.find((c) => c.id === caseId) || null;
+      setCompletedCase(completedCaseData);
+    }
+    fetchCompletedCase();
+  }, []);
 
   return (
     <View className="flex-1 bg-background px-6 py-4">

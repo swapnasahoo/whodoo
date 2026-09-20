@@ -27,8 +27,8 @@ const CaseCard = ({
         onPress={() =>
           router.push({ pathname: "/SolveCase", params: { caseId: id } })
         }
-        className={`bg-card px-6 py-2 h-32 rounded-md border border-border transition-all ease-in duration-200 active:scale-[0.98] ${isCompleted && "opacity-50"} ${!isPrevCompleted && "opacity-60"}`}
-        disabled={isCompleted || !isPrevCompleted}
+        className={`bg-card px-6 py-2 h-32 rounded-md border border-border transition-all ease-in duration-200 active:scale-[0.98] ${!isPrevCompleted && "opacity-60"}`}
+        disabled={!isPrevCompleted}
       >
         <View className="flex-row items-center justify-between">
           <Text className="text-foreground font-jakarta-medium">
